@@ -1,0 +1,410 @@
+[
+    {
+        "method_text": "ACLMessage createQueryMsgForNeighbourhood() {\n\n\t\tACLMessage msg = new ACLMessage(ACLMessage.QUERY_REF);\n\t\tmsg.setProtocol(jade.domain.FIPANames.InteractionProtocol.FIPA_QUERY);\n\t\tfor (int i = 0; i < myNeighbours.length; i++) {\n\t\t\tmsg.addReceiver(myNeighbours[i].getAID());\n\t\t}\n\t\tmsg.setLanguage(codec.getName());\n\t\tmsg.setOntology(ontology.getName());\n\n\t\treturn msg;\n\t}",
+        "method_tokens": "['ACLMessage', 'createQueryMsgForNeighbourhood', '(', ')', '{', 'ACLMessage', 'msg', '=', 'new', 'ACLMessage', '(', 'ACLMessage', '.', 'QUERY_REF', ')', ';', 'msg', '.', 'setProtocol', '(', 'jade', '.', 'domain', '.', 'FIPANames', '.', 'InteractionProtocol', '.', 'FIPA_QUERY', ')', ';', 'for', '(', 'int', 'i', '=', '0', ';', 'i', '<', 'myNeighbours', '.', 'length', ';', 'i', '++', ')', '{', 'msg', '.', 'addReceiver', '(', 'myNeighbours', '[', 'i', ']', '.', 'getAID', '(', ')', ')', ';', '}', 'msg', '.', 'setLanguage', '(', 'codec', '.', 'getName', '(', ')', ')', ';', 'msg', '.', 'setOntology', '(', 'ontology', '.', 'getName', '(', ')', ')', ';', 'return', 'msg', ';', '}']",
+        "comment_text": "*\n\t * CreateQueryMsgForNeighbourhood\n\t * @return : A FIPA_QUERY message in SL language and domain's ontology to be send\n\t * to this agent's neighbours\n\t ",
+        "comment_tokens": "['*', '*', 'CreateQueryMsgForNeighbourhood', '*', '@', 'return', ':', 'A', 'FIPA_QUERY', 'message', 'in', 'SL', 'language', 'and', 'domain', \"'s\", 'ontology', 'to', 'be', 'send', '*', 'to', 'this', 'agent', \"'s\", 'neighbours']"
+    },
+    {
+        "method_text": "float calculatePriceVariable(ACLMessage queryFromWSA,\n\t\t\tfloat lastConsumption) {\n\n\t\tfloat previousConsumption = (this.consumptionLn ? (float) Math\n\t\t\t\t.log(lastConsumption) : lastConsumption);\n\n\t\tif (previousConsumption < 0) {\n\t\t\tpreviousConsumption = (float) 0.1;\n\t\t\tthis.sendFailureMessage(\"My last consumption was <0...\");\n\t\t}\n\n\t\tPriceBlock[] priceBlocks;\n\t\tfloat price = 0;\n\t\ttry {\n\t\t\tContentElement ce = getContentManager()\n\t\t\t\t\t.extractContent(queryFromWSA);\n\t\t\tConsumes cs = (Consumes) ce;\n\t\t\tObject[] temp = cs.getPricingScale().toArray();\n\t\t\tpriceBlocks = new PriceBlock[temp.length];\n\t\t\tfor (int i = 0; i < priceBlocks.length; i++) {\n\t\t\t\tpriceBlocks[i] = (PriceBlock) temp[i];\n\t\t\t}\n\n\t\t\tif (this.priceType.equals(\"AP\"))\n\t\t\t\tprice = getAveragePrice(priceBlocks, previousConsumption);\n\t\t\telse if (this.priceType.equals(\"MP\"))\n\t\t\t\tprice = getMarginalPrice(priceBlocks, previousConsumption);\n\t\t} catch (CodecException coe) {\n\t\t\tlog.error(coe.getStackTrace());\n\t\t} catch (OntologyException one) {\n\t\t\tlog.error(one.getStackTrace());\n\t\t}\n\t\treturn price;\n\n\t}",
+        "method_tokens": "['float', 'calculatePriceVariable', '(', 'ACLMessage', 'queryFromWSA', ',', 'float', 'lastConsumption', ')', '{', 'float', 'previousConsumption', '=', '(', 'this', '.', 'consumptionLn', '?', '(', 'float', ')', 'Math', '.', 'log', '(', 'lastConsumption', ')', ':', 'lastConsumption', ')', ';', 'if', '(', 'previousConsumption', '<', '0', ')', '{', 'previousConsumption', '=', '(', 'float', ')', '0.1', ';', 'this', '.', 'sendFailureMessage', '(', '\"My last consumption was <0...\"', ')', ';', '}', 'PriceBlock', '[', ']', 'priceBlocks', ';', 'float', 'price', '=', '0', ';', 'try', '{', 'ContentElement', 'ce', '=', 'getContentManager', '(', ')', '.', 'extractContent', '(', 'queryFromWSA', ')', ';', 'Consumes', 'cs', '=', '(', 'Consumes', ')', 'ce', ';', 'Object', '[', ']', 'temp', '=', 'cs', '.', 'getPricingScale', '(', ')', '.', 'toArray', '(', ')', ';', 'priceBlocks', '=', 'new', 'PriceBlock', '[', 'temp', '.', 'length', ']', ';', 'for', '(', 'int', 'i', '=', '0', ';', 'i', '<', 'priceBlocks', '.', 'length', ';', 'i', '++', ')', '{', 'priceBlocks', '[', 'i', ']', '=', '(', 'PriceBlock', ')', 'temp', '[', 'i', ']', ';', '}', 'if', '(', 'this', '.', 'priceType', '.', 'equals', '(', '\"AP\"', ')', ')', 'price', '=', 'getAveragePrice', '(', 'priceBlocks', ',', 'previousConsumption', ')', ';', 'else', 'if', '(', 'this', '.', 'priceType', '.', 'equals', '(', '\"MP\"', ')', ')', 'price', '=', 'getMarginalPrice', '(', 'priceBlocks', ',', 'previousConsumption', ')', ';', '}', 'catch', '(', 'CodecException', 'coe', ')', '{', 'log', '.', 'error', '(', 'coe', '.', 'getStackTrace', '(', ')', ')', ';', '}', 'catch', '(', 'OntologyException', 'one', ')', '{', 'log', '.', 'error', '(', 'one', '.', 'getStackTrace', '(', ')', ')', ';', '}', 'return', 'price', ';', '}']",
+        "comment_text": "*\n\t * calculatePriceVariable : checks whether to use Average Price or Marginal Price\n\t * @param queryFromWSA the message with price blocks\n\t * @param previousConsumption the previous personal consumption\n\t * @return the price value to be used in demand curve\n\t ",
+        "comment_tokens": "['*', '*', 'calculatePriceVariable', ':', 'checks', 'whether', 'to', 'use', 'Average', 'Price', 'or', 'Marginal', 'Price', '*', '@', 'param', 'queryFromWSA', 'the', 'message', 'with', 'price', 'blocks', '*', '@', 'param', 'previousConsumption', 'the', 'previous', 'personal', 'consumption', '*', '@', 'return', 'the', 'price', 'value', 'to', 'be', 'used', 'in', 'demand', 'curve']"
+    },
+    {
+        "method_text": "boolean match(ACLMessage msg) {\n\n\t\t\tAID sender = msg.getSender();\n\t\t\tboolean out = false;\n\t\t\tint i = 0;\n\t\t\twhile (!out && i < neighbours.length) {\n\t\t\t\tif (sender.equals(neighbours[i].getAID()))\n\t\t\t\t\tout = true;\n\t\t\t\ti++;\n\t\t\t}\n\n\t\t\treturn out;\n\t\t}",
+        "method_tokens": "['boolean', 'match', '(', 'ACLMessage', 'msg', ')', '{', 'AID', 'sender', '=', 'msg', '.', 'getSender', '(', ')', ';', 'boolean', 'out', '=', 'false', ';', 'int', 'i', '=', '0', ';', 'while', '(', '!', 'out', '&&', 'i', '<', 'neighbours', '.', 'length', ')', '{', 'if', '(', 'sender', '.', 'equals', '(', 'neighbours', '[', 'i', ']', '.', 'getAID', '(', ')', ')', ')', 'out', '=', 'true', ';', 'i', '++', ';', '}', 'return', 'out', ';', '}']",
+        "comment_text": "This method verifies if the ACLMessage was sent from one of the expected senders.",
+        "comment_tokens": "['This', 'method', 'verifies', 'if', 'the', 'ACLMessage', 'was', 'sent', 'from', 'one', 'of', 'the', 'expected', 'senders', '.']"
+    },
+    {
+        "method_text": "boolean match(ACLMessage msg) {\n\t\t\ttry {\n\t\t\t\tContentElement ce = ConsumerAgent.this.getContentManager()\n\t\t\t\t\t\t.extractContent(msg);\n\t\t\t\tif (ce instanceof Action) {\n\t\t\t\t\tAction rc = (Action) ce;\n\t\t\t\t\tswitch (myAction) {\n\t\t\t\t\tcase 0:\n\t\t\t\t\t\tif (rc.getAction() instanceof LaunchGUI)\n\t\t\t\t\t\t\treturn true;\n\t\t\t\t\t\tbreak;\n\t\t\t\t\tcase 1:\n\t\t\t\t\t\tif (rc.getAction() instanceof SavePersonalData)\n\t\t\t\t\t\t\treturn true;\n\t\t\t\t\t\tbreak;\n\t\t\t\t\tdefault:\n\t\t\t\t\t\treturn false;\n\t\t\t\t\t}\n\n\t\t\t\t}// END-if\n\t\t\t} catch (CodecException cee) {\n\t\t\t\tlog.error(cee.getStackTrace());\n\t\t\t} catch (OntologyException oe) {\n\t\t\t\tlog.error(oe.getStackTrace());\n\t\t\t} catch (Exception ioe) {\n\t\t\t\tlog.error(ioe.getStackTrace());\n\t\t\t}\n\n\t\t\treturn false;\n\t\t}",
+        "method_tokens": "['boolean', 'match', '(', 'ACLMessage', 'msg', ')', '{', 'try', '{', 'ContentElement', 'ce', '=', 'ConsumerAgent', '.', 'this', '.', 'getContentManager', '(', ')', '.', 'extractContent', '(', 'msg', ')', ';', 'if', '(', 'ce', 'instanceof', 'Action', ')', '{', 'Action', 'rc', '=', '(', 'Action', ')', 'ce', ';', 'switch', '(', 'myAction', ')', '{', 'case', '0', ':', 'if', '(', 'rc', '.', 'getAction', '(', ')', 'instanceof', 'LaunchGUI', ')', 'return', 'true', ';', 'break', ';', 'case', '1', ':', 'if', '(', 'rc', '.', 'getAction', '(', ')', 'instanceof', 'SavePersonalData', ')', 'return', 'true', ';', 'break', ';', 'default', ':', 'return', 'false', ';', '}', '}', '}', 'catch', '(', 'CodecException', 'cee', ')', '{', 'log', '.', 'error', '(', 'cee', '.', 'getStackTrace', '(', ')', ')', ';', '}', 'catch', '(', 'OntologyException', 'oe', ')', '{', 'log', '.', 'error', '(', 'oe', '.', 'getStackTrace', '(', ')', ')', ';', '}', 'catch', '(', 'Exception', 'ioe', ')', '{', 'log', '.', 'error', '(', 'ioe', '.', 'getStackTrace', '(', ')', ')', ';', '}', 'return', 'false', ';', '}']",
+        "comment_text": "This method verifies the action of the Request ACLMessage.",
+        "comment_tokens": "['This', 'method', 'verifies', 'the', 'action', 'of', 'the', 'Request', 'ACLMessage', '.']"
+    },
+    {
+        "method_text": "void launchGui() {\n\n\t\tmyGui = new ConsumerGUI(this, personalConsumptions, myNeighbours,\n\t\t\t\tsocialParameters, socialParametersWeightsPerStep);\n\t\tACLMessage reply = new ACLMessage(ACLMessage.INFORM);\n\t\treply.addReceiver(AIDs.SIMULATOR);\n//\t\treply.addReceiver(new AID(\"dawn\", false));\n\t\treply.setContent(\"my GUI is launched\");\n\t\tsend(reply);\n\t}",
+        "method_tokens": "['void', 'launchGui', '(', ')', '{', 'myGui', '=', 'new', 'ConsumerGUI', '(', 'this', ',', 'personalConsumptions', ',', 'myNeighbours', ',', 'socialParameters', ',', 'socialParametersWeightsPerStep', ')', ';', 'ACLMessage', 'reply', '=', 'new', 'ACLMessage', '(', 'ACLMessage', '.', 'INFORM', ')', ';', 'reply', '.', 'addReceiver', '(', 'AIDs', '.', 'SIMULATOR', ')', ';', 'reply', '.', 'setContent', '(', '\"my GUI is launched\"', ')', ';', 'send', '(', 'reply', ')', ';', '}']",
+        "comment_text": "*\n\t * launchGui\n\t ",
+        "comment_tokens": "['*', '*', 'launchGui']"
+    },
+    {
+        "method_text": "void unpackArguments(){\n      Object[] arguments = this.getArguments();\n      this.simulationDuration = ((Integer)arguments[0]).intValue();\n      this.metDataFile = (File)arguments[1];\n      this.simulationStep = ((Integer)arguments[2]).intValue();\n    }",
+        "method_tokens": "['void', 'unpackArguments', '(', ')', '{', 'Object', '[', ']', 'arguments', '=', 'this', '.', 'getArguments', '(', ')', ';', 'this', '.', 'simulationDuration', '=', '(', '(', 'Integer', ')', 'arguments', '[', '0', ']', ')', '.', 'intValue', '(', ')', ';', 'this', '.', 'metDataFile', '=', '(', 'File', ')', 'arguments', '[', '1', ']', ';', 'this', '.', 'simulationStep', '=', '(', '(', 'Integer', ')', 'arguments', '[', '2', ']', ')', '.', 'intValue', '(', ')', ';', '}']",
+        "comment_text": "*\n     * \"Unpack\" the arguments MOA receives when is born. The arguments are elements of an object array.\n     * The first argument is the simulation duration and the second the file where the met data are\n     * stored. Is called first in setup method.\n     ",
+        "comment_tokens": "['*', '*', '``', 'Unpack', \"''\", 'the', 'arguments', 'MOA', 'receives', 'when', 'is', 'born', '.', 'The', 'arguments', 'are', 'elements', 'of', 'an', 'object', 'array', '.', '*', 'The', 'first', 'argument', 'is', 'the', 'simulation', 'duration', 'and', 'the', 'second', 'the', 'file', 'where', 'the', 'met', 'data', 'are', '*', 'stored', '.', 'Is', 'called', 'first', 'in', 'setup', 'method', '.']"
+    },
+    {
+        "method_text": "FileData parseString(String record){\n\n       float temperature = 0;\n\n       String temp=\"\";\n       for(int i=0 ; i<record.length() ; i++){\n          if( ( ((int)record.charAt(i) >=48) && ((int)record.charAt(i) <=57) )\n                                                                      || record.charAt(i) == '.'){\n              temp+= record.charAt(i);\n          }// END-if\n          else if (record.charAt(i) == ' ' && !temp.equals(\"\")){\n                   temperature = Float.valueOf(temp).floatValue();\n                   temp=\"\";\n               }\n\n\n       }//END-for\n\n       if (temperature == 0 || temp == \"\") return null;\n\n       return (new FileData(temperature,Float.valueOf(temp).floatValue()));\n\n    }",
+        "method_tokens": "['FileData', 'parseString', '(', 'String', 'record', ')', '{', 'float', 'temperature', '=', '0', ';', 'String', 'temp', '=', '\"\"', ';', 'for', '(', 'int', 'i', '=', '0', ';', 'i', '<', 'record', '.', 'length', '(', ')', ';', 'i', '++', ')', '{', 'if', '(', '(', '(', '(', 'int', ')', 'record', '.', 'charAt', '(', 'i', ')', '>=', '48', ')', '&&', '(', '(', 'int', ')', 'record', '.', 'charAt', '(', 'i', ')', '<=', '57', ')', ')', '||', 'record', '.', 'charAt', '(', 'i', ')', '==', \"'.'\", ')', '{', 'temp', '+=', 'record', '.', 'charAt', '(', 'i', ')', ';', '}', 'else', 'if', '(', 'record', '.', 'charAt', '(', 'i', ')', '==', \"' '\", '&&', '!', 'temp', '.', 'equals', '(', '\"\"', ')', ')', '{', 'temperature', '=', 'Float', '.', 'valueOf', '(', 'temp', ')', '.', 'floatValue', '(', ')', ';', 'temp', '=', '\"\"', ';', '}', '}', 'if', '(', 'temperature', '==', '0', '||', 'temp', '==', '\"\"', ')', 'return', 'null', ';', 'return', '(', 'new', 'FileData', '(', 'temperature', ',', 'Float', '.', 'valueOf', '(', 'temp', ')', '.', 'floatValue', '(', ')', ')', ')', ';', '}']",
+        "comment_text": "*\n     * Parses the record and \"translate\" it into a temperature value and a rainfall value. The record\n     * follows the specified format : [temperature] [rainfall] \\n\n     * @param record one line (string) read from met data File\n     * @return FileData Object with temperature and rainfall properties filled\n     ",
+        "comment_tokens": "['*', '*', 'Parses', 'the', 'record', 'and', '``', 'translate', \"''\", 'it', 'into', 'a', 'temperature', 'value', 'and', 'a', 'rainfall', 'value', '.', 'The', 'record', '*', 'follows', 'the', 'specified', 'format', ':', '[', 'temperature', ']', '[', 'rainfall', ']', '\\\\n', '*', '@', 'param', 'record', 'one', 'line', '(', 'string', ')', 'read', 'from', 'met', 'data', 'File', '*', '@', 'return', 'FileData', 'Object', 'with', 'temperature', 'and', 'rainfall', 'properties', 'filled']"
+    },
+    {
+        "method_text": "Float readTemperature(Integer step){\n        FileData fd = (FileData) metData.elementAt((step.intValue()-1)*simulationStep);\n        // step checking (maybe)\n        return (new Float(fd.getTemperature()));\n    }",
+        "method_tokens": "['Float', 'readTemperature', '(', 'Integer', 'step', ')', '{', 'FileData', 'fd', '=', '(', 'FileData', ')', 'metData', '.', 'elementAt', '(', '(', 'step', '.', 'intValue', '(', ')', '-', '1', ')', '*', 'simulationStep', ')', ';', 'return', '(', 'new', 'Float', '(', 'fd', '.', 'getTemperature', '(', ')', ')', ')', ';', '}']",
+        "comment_text": "*\n     * Returns the temperature as a Float for the specified simulation step\n     * @param step the step for which to read the temperature\n     * @return the temperature as a Float value\n     ",
+        "comment_tokens": "['*', '*', 'Returns', 'the', 'temperature', 'as', 'a', 'Float', 'for', 'the', 'specified', 'simulation', 'step', '*', '@', 'param', 'step', 'the', 'step', 'for', 'which', 'to', 'read', 'the', 'temperature', '*', '@', 'return', 'the', 'temperature', 'as', 'a', 'Float', 'value']"
+    },
+    {
+        "method_text": "Float readRainfall(Integer step){\n        FileData fd = (FileData) metData.elementAt((step.intValue()-1)*simulationStep);\n        return (new Float(fd.getRainfall()));\n    }",
+        "method_tokens": "['Float', 'readRainfall', '(', 'Integer', 'step', ')', '{', 'FileData', 'fd', '=', '(', 'FileData', ')', 'metData', '.', 'elementAt', '(', '(', 'step', '.', 'intValue', '(', ')', '-', '1', ')', '*', 'simulationStep', ')', ';', 'return', '(', 'new', 'Float', '(', 'fd', '.', 'getRainfall', '(', ')', ')', ')', ';', '}']",
+        "comment_text": "*\n     * Returns the rainfall as a Float for the specified simulation step\n     * @param step the step for which to read the rainfall\n     * @return the rainfall as a Float value\n     ",
+        "comment_tokens": "['*', '*', 'Returns', 'the', 'rainfall', 'as', 'a', 'Float', 'for', 'the', 'specified', 'simulation', 'step', '*', '@', 'param', 'step', 'the', 'step', 'for', 'which', 'to', 'read', 'the', 'rainfall', '*', '@', 'return', 'the', 'rainfall', 'as', 'a', 'Float', 'value']"
+    },
+    {
+        "method_text": "float getTemperature(){return this.temperature;}",
+        "method_tokens": "['float', 'getTemperature', '(', ')', '{', 'return', 'this', '.', 'temperature', ';', '}']",
+        "comment_text": "public int getStep(){return this.step;}",
+        "comment_tokens": "['public', 'int', 'getStep', '(', ')', '{', 'return', 'this.step', ';', '}']"
+    },
+    {
+        "method_text": "void action() {\n\n         // Create message\n         ACLMessage startMsg = new ACLMessage(ACLMessage.REQUEST);\n         startMsg.addReceiver(WATER_SUPPLIER);\n         startMsg.setLanguage(myAgent.codec.getName());\n         startMsg.setOntology(myAgent.ontology.getName());\n\n         // Create content\n           // Fill concept\n         StepAttr step = new StepAttr();\n         step.setId(this.step);\n           // Fill agentAction\n         Start aa = new Start();\n         aa.setSimulationStep(step);\n           // Fill message content\n         Action act = new Action(WATER_SUPPLIER,aa);\n         try{\n            myAgent.getContentManager().fillContent(startMsg,act);\n            myAgent.send(startMsg);\n         }\n         catch (CodecException ce){ log.error(ce.getStackTrace()); }\n         catch (OntologyException oe){ log.error(oe.getStackTrace());}\n\n     }",
+        "method_tokens": "['void', 'action', '(', ')', '{', 'ACLMessage', 'startMsg', '=', 'new', 'ACLMessage', '(', 'ACLMessage', '.', 'REQUEST', ')', ';', 'startMsg', '.', 'addReceiver', '(', 'WATER_SUPPLIER', ')', ';', 'startMsg', '.', 'setLanguage', '(', 'myAgent', '.', 'codec', '.', 'getName', '(', ')', ')', ';', 'startMsg', '.', 'setOntology', '(', 'myAgent', '.', 'ontology', '.', 'getName', '(', ')', ')', ';', 'StepAttr', 'step', '=', 'new', 'StepAttr', '(', ')', ';', 'step', '.', 'setId', '(', 'this', '.', 'step', ')', ';', 'Start', 'aa', '=', 'new', 'Start', '(', ')', ';', 'aa', '.', 'setSimulationStep', '(', 'step', ')', ';', 'Action', 'act', '=', 'new', 'Action', '(', 'WATER_SUPPLIER', ',', 'aa', ')', ';', 'try', '{', 'myAgent', '.', 'getContentManager', '(', ')', '.', 'fillContent', '(', 'startMsg', ',', 'act', ')', ';', 'myAgent', '.', 'send', '(', 'startMsg', ')', ';', '}', 'catch', '(', 'CodecException', 'ce', ')', '{', 'log', '.', 'error', '(', 'ce', '.', 'getStackTrace', '(', ')', ')', ';', '}', 'catch', '(', 'OntologyException', 'oe', ')', '{', 'log', '.', 'error', '(', 'oe', '.', 'getStackTrace', '(', ')', ')', ';', '}', '}']",
+        "comment_text": " ACTION",
+        "comment_tokens": "['ACTION']"
+    },
+    {
+        "method_text": "void sendGuiRequestMessage(String agentName){\n      boolean found = false;\n      int i=-1;\n      ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);\n      while(!found && i<this.consumers.length){\n        i++;\n        if (consumers[i].getName().equals(agentName))\n            found=true;\n      }\n      msg.addReceiver(consumers[i].getAID());\n      msg.setLanguage(codec.getName());\n      msg.setOntology(ontology.getName());\n      // Create content\n      LaunchGUI lg = new LaunchGUI();\n      Action act = new Action(consumers[i].getAID(),lg);\n      try{\n          getContentManager().fillContent(msg,act);\n          send(msg);\n      }\n      catch (CodecException ce){ log.error(ce.getStackTrace()); }\n      catch (OntologyException oe){ log.error(oe.getStackTrace());}\n\n  }",
+        "method_tokens": "['void', 'sendGuiRequestMessage', '(', 'String', 'agentName', ')', '{', 'boolean', 'found', '=', 'false', ';', 'int', 'i', '=', '-', '1', ';', 'ACLMessage', 'msg', '=', 'new', 'ACLMessage', '(', 'ACLMessage', '.', 'REQUEST', ')', ';', 'while', '(', '!', 'found', '&&', 'i', '<', 'this', '.', 'consumers', '.', 'length', ')', '{', 'i', '++', ';', 'if', '(', 'consumers', '[', 'i', ']', '.', 'getName', '(', ')', '.', 'equals', '(', 'agentName', ')', ')', 'found', '=', 'true', ';', '}', 'msg', '.', 'addReceiver', '(', 'consumers', '[', 'i', ']', '.', 'getAID', '(', ')', ')', ';', 'msg', '.', 'setLanguage', '(', 'codec', '.', 'getName', '(', ')', ')', ';', 'msg', '.', 'setOntology', '(', 'ontology', '.', 'getName', '(', ')', ')', ';', 'LaunchGUI', 'lg', '=', 'new', 'LaunchGUI', '(', ')', ';', 'Action', 'act', '=', 'new', 'Action', '(', 'consumers', '[', 'i', ']', '.', 'getAID', '(', ')', ',', 'lg', ')', ';', 'try', '{', 'getContentManager', '(', ')', '.', 'fillContent', '(', 'msg', ',', 'act', ')', ';', 'send', '(', 'msg', ')', ';', '}', 'catch', '(', 'CodecException', 'ce', ')', '{', 'log', '.', 'error', '(', 'ce', '.', 'getStackTrace', '(', ')', ')', ';', '}', 'catch', '(', 'OntologyException', 'oe', ')', '{', 'log', '.', 'error', '(', 'oe', '.', 'getStackTrace', '(', ')', ')', ';', '}', '}']",
+        "comment_text": "*\n   * Sends a REQUEST message to a consumer agent to launch its personal GUI\n   * @param agentName The CA's name to which the message is sent\n   ",
+        "comment_tokens": "['*', '*', 'Sends', 'a', 'REQUEST', 'message', 'to', 'a', 'consumer', 'agent', 'to', 'launch', 'its', 'personal', 'GUI', '*', '@', 'param', 'agentName', 'The', 'CA', \"'s\", 'name', 'to', 'which', 'the', 'message', 'is', 'sent']"
+    },
+    {
+        "method_text": "void mouseClicked(MouseEvent e){\n      int x = ((e.getX()-x0)/cellDimension)+1;\n      int y = ((e.getY()-y0)/cellDimension)+1;\n      if(x>0 && x<=cells && y>0 && y<=cells){\n          if(cellOccupied[x][y]){\n              GuiEvent ge = new GuiEvent((Object) this, SimulationAgent.LAUNCH_CONSUMER_GUI);\n              ge.addParameter(\"consumer_\"+ x + \",\" + y);\n              myAgent.postGuiEvent(ge);\n          }\n      }  else log.error(\"Out of range\");\n    }",
+        "method_tokens": "['void', 'mouseClicked', '(', 'MouseEvent', 'e', ')', '{', 'int', 'x', '=', '(', '(', 'e', '.', 'getX', '(', ')', '-', 'x0', ')', '/', 'cellDimension', ')', '+', '1', ';', 'int', 'y', '=', '(', '(', 'e', '.', 'getY', '(', ')', '-', 'y0', ')', '/', 'cellDimension', ')', '+', '1', ';', 'if', '(', 'x', '>', '0', '&&', 'x', '<=', 'cells', '&&', 'y', '>', '0', '&&', 'y', '<=', 'cells', ')', '{', 'if', '(', 'cellOccupied', '[', 'x', ']', '[', 'y', ']', ')', '{', 'GuiEvent', 'ge', '=', 'new', 'GuiEvent', '(', '(', 'Object', ')', 'this', ',', 'SimulationAgent', '.', 'LAUNCH_CONSUMER_GUI', ')', ';', 'ge', '.', 'addParameter', '(', '\"consumer_\"', '+', 'x', '+', '\",\"', '+', 'y', ')', ';', 'myAgent', '.', 'postGuiEvent', '(', 'ge', ')', ';', '}', '}', 'else', 'log', '.', 'error', '(', '\"Out of range\"', ')', ';', '}']",
+        "comment_text": "MouseListener implementation",
+        "comment_tokens": "['MouseListener', 'implementation']"
+    },
+    {
+        "method_text": "String getName(){ return agentName; }",
+        "method_tokens": "['String', 'getName', '(', ')', '{', 'return', 'agentName', ';', '}']",
+        "comment_text": "*\n   *\n   * @return\n   ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "void setName(String name) { agentName = name;}",
+        "method_tokens": "['void', 'setName', '(', 'String', 'name', ')', '{', 'agentName', '=', 'name', ';', '}']",
+        "comment_text": "*\n   *\n   * @param name\n   ",
+        "comment_tokens": "['*', '*', '*', '@', 'param', 'name']"
+    },
+    {
+        "method_text": "AID getAID(){ return aid; }",
+        "method_tokens": "['AID', 'getAID', '(', ')', '{', 'return', 'aid', ';', '}']",
+        "comment_text": "*\n   *\n   * @return\n   ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "void setAID(AID aid) { this.aid = aid;}",
+        "method_tokens": "['void', 'setAID', '(', 'AID', 'aid', ')', '{', 'this', '.', 'aid', '=', 'aid', ';', '}']",
+        "comment_text": "*\n   *\n   * @param aid\n   ",
+        "comment_tokens": "['*', '*', '*', '@', 'param', 'aid']"
+    },
+    {
+        "method_text": "int getX(){ return x; }",
+        "method_tokens": "['int', 'getX', '(', ')', '{', 'return', 'x', ';', '}']",
+        "comment_text": "*\n   *\n   * @return\n   ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "void setX(int x) { this.x=x; }",
+        "method_tokens": "['void', 'setX', '(', 'int', 'x', ')', '{', 'this', '.', 'x', '=', 'x', ';', '}']",
+        "comment_text": "*\n   *\n   * @param x\n   ",
+        "comment_tokens": "['*', '*', '*', '@', 'param', 'x']"
+    },
+    {
+        "method_text": "int getY(){ return y; }",
+        "method_tokens": "['int', 'getY', '(', ')', '{', 'return', 'y', ';', '}']",
+        "comment_text": "*\n   *\n   * @return\n   ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "void setY(int y) { this.y=y; }",
+        "method_tokens": "['void', 'setY', '(', 'int', 'y', ')', '{', 'this', '.', 'y', '=', 'y', ';', '}']",
+        "comment_text": "*\n   *\n   * @param y\n   ",
+        "comment_tokens": "['*', '*', '*', '@', 'param', 'y']"
+    },
+    {
+        "method_text": "String getConsumerType(){ return consumerType; }",
+        "method_tokens": "['String', 'getConsumerType', '(', ')', '{', 'return', 'consumerType', ';', '}']",
+        "comment_text": "*\n   *\n   * @return\n   ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "void setConsumerType(String consumerType) { this.consumerType = consumerType;}",
+        "method_tokens": "['void', 'setConsumerType', '(', 'String', 'consumerType', ')', '{', 'this', '.', 'consumerType', '=', 'consumerType', ';', '}']",
+        "comment_text": "*\n   *\n   * @param consumerType\n   ",
+        "comment_tokens": "['*', '*', '*', '@', 'param', 'consumerType']"
+    },
+    {
+        "method_text": "String getName() {\n\t\treturn this.name;\n\t}",
+        "method_tokens": "['String', 'getName', '(', ')', '{', 'return', 'this', '.', 'name', ';', '}']",
+        "comment_text": "*\n\t *\n\t * @return\n\t ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "Float getPercentage() {\n\t\treturn this.percentage;\n\t}",
+        "method_tokens": "['Float', 'getPercentage', '(', ')', '{', 'return', 'this', '.', 'percentage', ';', '}']",
+        "comment_text": "*\n\t *\n\t * @return\n\t ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "int getMembers() {\n\t\treturn this.members.intValue();\n\t}",
+        "method_tokens": "['int', 'getMembers', '(', ')', '{', 'return', 'this', '.', 'members', '.', 'intValue', '(', ')', ';', '}']",
+        "comment_text": "*\n\t *\n\t * @return\n\t ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "void setName(String n) {\n\t\tthis.name = n;\n\t}",
+        "method_tokens": "['void', 'setName', '(', 'String', 'n', ')', '{', 'this', '.', 'name', '=', 'n', ';', '}']",
+        "comment_text": "*\n\t *\n\t * @param n\n\t ",
+        "comment_tokens": "['*', '*', '*', '@', 'param', 'n']"
+    },
+    {
+        "method_text": "void setPercentage(Float p) {\n\t\tthis.percentage = p;\n\t}",
+        "method_tokens": "['void', 'setPercentage', '(', 'Float', 'p', ')', '{', 'this', '.', 'percentage', '=', 'p', ';', '}']",
+        "comment_text": "*\n\t *\n\t * @param p\n\t ",
+        "comment_tokens": "['*', '*', '*', '@', 'param', 'p']"
+    },
+    {
+        "method_text": "void setMembers(int m) {\n\t\tthis.members = new Integer(m);\n\t}",
+        "method_tokens": "['void', 'setMembers', '(', 'int', 'm', ')', '{', 'this', '.', 'members', '=', 'new', 'Integer', '(', 'm', ')', ';', '}']",
+        "comment_text": "*\n\t *\n\t * @param m\n\t ",
+        "comment_tokens": "['*', '*', '*', '@', 'param', 'm']"
+    },
+    {
+        "method_text": "void setFunctionName(String name){ this.functionName = name;}",
+        "method_tokens": "['void', 'setFunctionName', '(', 'String', 'name', ')', '{', 'this', '.', 'functionName', '=', 'name', ';', '}']",
+        "comment_text": "*\n     *\n     * @param name\n     ",
+        "comment_tokens": "['*', '*', '*', '@', 'param', 'name']"
+    },
+    {
+        "method_text": "String getFunctionName(){ return this.functionName;}",
+        "method_tokens": "['String', 'getFunctionName', '(', ')', '{', 'return', 'this', '.', 'functionName', ';', '}']",
+        "comment_text": "*\n     *\n     * @return\n     ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "void setFunctionRepresentation(String r){ this.functionRepresentation = r;}",
+        "method_tokens": "['void', 'setFunctionRepresentation', '(', 'String', 'r', ')', '{', 'this', '.', 'functionRepresentation', '=', 'r', ';', '}']",
+        "comment_text": "*\n     *\n     * @param r\n     ",
+        "comment_tokens": "['*', '*', '*', '@', 'param', 'r']"
+    },
+    {
+        "method_text": "String getFunctionRepresentation(){ return this.functionRepresentation;}",
+        "method_tokens": "['String', 'getFunctionRepresentation', '(', ')', '{', 'return', 'this', '.', 'functionRepresentation', ';', '}']",
+        "comment_text": "*\n     *\n     * @return\n     ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "void setFunctionConstants(Vector v){ this.functionConstants = v;}",
+        "method_tokens": "['void', 'setFunctionConstants', '(', 'Vector', 'v', ')', '{', 'this', '.', 'functionConstants', '=', 'v', ';', '}']",
+        "comment_text": "*\n     *simulator\n     * @param v\n     ",
+        "comment_tokens": "['*', '*', 'simulator', '*', '@', 'param', 'v']"
+    },
+    {
+        "method_text": "Iterator getFunctionConstants(){ return this.functionConstants.iterator();}",
+        "method_tokens": "['Iterator', 'getFunctionConstants', '(', ')', '{', 'return', 'this', '.', 'functionConstants', '.', 'iterator', '(', ')', ';', '}']",
+        "comment_text": "*\n     *\n     * @return An iterator of this function's constants\n     ",
+        "comment_tokens": "['*', '*', '*', '@', 'return', 'An', 'iterator', 'of', 'this', 'function', \"'s\", 'constants']"
+    },
+    {
+        "method_text": "int constantsNumber(){ return functionConstants.size();}",
+        "method_tokens": "['int', 'constantsNumber', '(', ')', '{', 'return', 'functionConstants', '.', 'size', '(', ')', ';', '}']",
+        "comment_text": "*\n     *\n     * @return The number of constants\n     ",
+        "comment_tokens": "['*', '*', '*', '@', 'return', 'The', 'number', 'of', 'constants']"
+    },
+    {
+        "method_text": "float valueFor(int x);",
+        "method_tokens": "['float', 'valueFor', '(', 'int', 'x', ')', ';']",
+        "comment_text": "*\n     * It must be implemented by a child class so as for every input X (int x) to return a value Y.\n     * X could be the stepId.\n     * @param x\n     * @return\n     ",
+        "comment_tokens": "['*', '*', 'It', 'must', 'be', 'implemented', 'by', 'a', 'child', 'class', 'so', 'as', 'for', 'every', 'input', 'X', '(', 'int', 'x', ')', 'to', 'return', 'a', 'value', 'Y', '.', '*', 'X', 'could', 'be', 'the', 'stepId', '.', '*', '@', 'param', 'x', '*', '@', 'return']"
+    },
+    {
+        "method_text": "float valueFor(float x);",
+        "method_tokens": "['float', 'valueFor', '(', 'float', 'x', ')', ';']",
+        "comment_text": "*\n     * It must be implemented by a child class so as for every input X (float x) to return a value Y.\n     * X could be weights' sum when this Function used for socialization.\n     * @param x\n     * @return\n     ",
+        "comment_tokens": "['*', '*', 'It', 'must', 'be', 'implemented', 'by', 'a', 'child', 'class', 'so', 'as', 'for', 'every', 'input', 'X', '(', 'float', 'x', ')', 'to', 'return', 'a', 'value', 'Y', '.', '*', 'X', 'could', 'be', 'weights', \"'\", 'sum', 'when', 'this', 'Function', 'used', 'for', 'socialization', '.', '*', '@', 'param', 'x', '*', '@', 'return']"
+    },
+    {
+        "method_text": "boolean parseString(String inputs);",
+        "method_tokens": "['boolean', 'parseString', '(', 'String', 'inputs', ')', ';']",
+        "comment_text": "*\n     * It must be implemented by a child class when a Function has to check if the String read from GUI\n     * has the appropriate format.\n     * @param inputs\n     * @return\n     ",
+        "comment_tokens": "['*', '*', 'It', 'must', 'be', 'implemented', 'by', 'a', 'child', 'class', 'when', 'a', 'Function', 'has', 'to', 'check', 'if', 'the', 'String', 'read', 'from', 'GUI', '*', 'has', 'the', 'appropriate', 'format', '.', '*', '@', 'param', 'inputs', '*', '@', 'return']"
+    },
+    {
+        "method_text": "boolean asFloat(){ return FSValue.booleanValue();}",
+        "method_tokens": "['boolean', 'asFloat', '(', ')', '{', 'return', 'FSValue', '.', 'booleanValue', '(', ')', ';', '}']",
+        "comment_text": "*\n         *\n         * @return true if the constant value is a float\n         ",
+        "comment_tokens": "['*', '*', '*', '@', 'return', 'true', 'if', 'the', 'constant', 'value', 'is', 'a', 'float']"
+    },
+    {
+        "method_text": "void setConstantName(String name){ this.constantName = name;}",
+        "method_tokens": "['void', 'setConstantName', '(', 'String', 'name', ')', '{', 'this', '.', 'constantName', '=', 'name', ';', '}']",
+        "comment_text": "*\n         *\n         * @param name\n         ",
+        "comment_tokens": "['*', '*', '*', '@', 'param', 'name']"
+    },
+    {
+        "method_text": "String getConstantName(){ return this.constantName;}",
+        "method_tokens": "['String', 'getConstantName', '(', ')', '{', 'return', 'this', '.', 'constantName', ';', '}']",
+        "comment_text": "*\n         *\n         * @return\n         ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "boolean setConstantValue(float value){ this.constantFValue = new Float(value);\n                                                      return true;}",
+        "method_tokens": "['boolean', 'setConstantValue', '(', 'float', 'value', ')', '{', 'this', '.', 'constantFValue', '=', 'new', 'Float', '(', 'value', ')', ';', 'return', 'true', ';', '}']",
+        "comment_text": "*\n         *\n         * @param value\n         * @return\n         ",
+        "comment_tokens": "['*', '*', '*', '@', 'param', 'value', '*', '@', 'return']"
+    },
+    {
+        "method_text": "float getConstantFValue(){ return this.constantFValue.floatValue();}",
+        "method_tokens": "['float', 'getConstantFValue', '(', ')', '{', 'return', 'this', '.', 'constantFValue', '.', 'floatValue', '(', ')', ';', '}']",
+        "comment_text": "*\n         *\n         * @return\n         ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "String getConstantSValue(){ return this.constantSValue;}",
+        "method_tokens": "['String', 'getConstantSValue', '(', ')', '{', 'return', 'this', '.', 'constantSValue', ';', '}']",
+        "comment_text": "*\n         *\n         * @return\n         ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "void setName(String name) { this.name = name; }",
+        "method_tokens": "['void', 'setName', '(', 'String', 'name', ')', '{', 'this', '.', 'name', '=', 'name', ';', '}']",
+        "comment_text": "*\n   * Set parameter name\n   * @param name\n   ",
+        "comment_tokens": "['*', '*', 'Set', 'parameter', 'name', '*', '@', 'param', 'name']"
+    },
+    {
+        "method_text": "String getName() { return name; }",
+        "method_tokens": "['String', 'getName', '(', ')', '{', 'return', 'name', ';', '}']",
+        "comment_text": "*\n   *\n   * @return\n   ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "void setElasticity(float elasticity) { this.elasticity = new Float(elasticity); }",
+        "method_tokens": "['void', 'setElasticity', '(', 'float', 'elasticity', ')', '{', 'this', '.', 'elasticity', '=', 'new', 'Float', '(', 'elasticity', ')', ';', '}']",
+        "comment_text": "*\n   * Set elasticity\n   * @param elasticity\n   ",
+        "comment_tokens": "['*', '*', 'Set', 'elasticity', '*', '@', 'param', 'elasticity']"
+    },
+    {
+        "method_text": "float getElasticity() { return elasticity.floatValue(); }",
+        "method_tokens": "['float', 'getElasticity', '(', ')', '{', 'return', 'elasticity', '.', 'floatValue', '(', ')', ';', '}']",
+        "comment_text": "*\n   *\n   * @return\n   ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "void setLn(boolean ln) { this.ln = new Boolean(ln); }",
+        "method_tokens": "['void', 'setLn', '(', 'boolean', 'ln', ')', '{', 'this', '.', 'ln', '=', 'new', 'Boolean', '(', 'ln', ')', ';', '}']",
+        "comment_text": "*\n   * Set true if the value of the parameter is the logarithm of parameter's function\n   * @param ln\n   ",
+        "comment_tokens": "['*', '*', 'Set', 'true', 'if', 'the', 'value', 'of', 'the', 'parameter', 'is', 'the', 'logarithm', 'of', 'parameter', \"'s\", 'function', '*', '@', 'param', 'ln']"
+    },
+    {
+        "method_text": "boolean getLn() { return ln.booleanValue(); }",
+        "method_tokens": "['boolean', 'getLn', '(', ')', '{', 'return', 'ln', '.', 'booleanValue', '(', ')', ';', '}']",
+        "comment_text": "*\n   *\n   * @return\n   ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "void setDemandCurveFunction(Function dCF) { demandCurveFunction = dCF; }",
+        "method_tokens": "['void', 'setDemandCurveFunction', '(', 'Function', 'dCF', ')', '{', 'demandCurveFunction', '=', 'dCF', ';', '}']",
+        "comment_text": "*\n   * Set the demand curve function for this parameter. The Demand Curve Function gets the stepId\n   * as input if the parameter isn't social, otherwise gets the sum of all weights received from\n   * its neighbours. It returns parameter's value.\n   * @param dCF One of the availabe functions\n   ",
+        "comment_tokens": "['*', '*', 'Set', 'the', 'demand', 'curve', 'function', 'for', 'this', 'parameter', '.', 'The', 'Demand', 'Curve', 'Function', 'gets', 'the', 'stepId', '*', 'as', 'input', 'if', 'the', 'parameter', 'is', \"n't\", 'social', ',', 'otherwise', 'gets', 'the', 'sum', 'of', 'all', 'weights', 'received', 'from', '*', 'its', 'neighbours', '.', 'It', 'returns', 'parameter', \"'s\", 'value', '.', '*', '@', 'param', 'dCF', 'One', 'of', 'the', 'availabe', 'functions']"
+    },
+    {
+        "method_text": "Function getDemandCurveFunction() { return demandCurveFunction; }",
+        "method_tokens": "['Function', 'getDemandCurveFunction', '(', ')', '{', 'return', 'demandCurveFunction', ';', '}']",
+        "comment_text": "*\n   * Set the demand curve function for this parameter\n   * @return\n   ",
+        "comment_tokens": "['*', '*', 'Set', 'the', 'demand', 'curve', 'function', 'for', 'this', 'parameter', '*', '@', 'return']"
+    },
+    {
+        "method_text": "void setSocialFunction(Function sF) { socialFunction = sF; }",
+        "method_tokens": "['void', 'setSocialFunction', '(', 'Function', 'sF', ')', '{', 'socialFunction', '=', 'sF', ';', '}']",
+        "comment_text": "*\n   * Set the social function for this parameter. The Social Curve Function gets the stepId\n   * as input and returns a value (the weight) that the consumer agent will send in socialization\n   * stage of simulation in the specified step.\n   * @param sF One of the available functions\n   ",
+        "comment_tokens": "['*', '*', 'Set', 'the', 'social', 'function', 'for', 'this', 'parameter', '.', 'The', 'Social', 'Curve', 'Function', 'gets', 'the', 'stepId', '*', 'as', 'input', 'and', 'returns', 'a', 'value', '(', 'the', 'weight', ')', 'that', 'the', 'consumer', 'agent', 'will', 'send', 'in', 'socialization', '*', 'stage', 'of', 'simulation', 'in', 'the', 'specified', 'step', '.', '*', '@', 'param', 'sF', 'One', 'of', 'the', 'available', 'functions']"
+    },
+    {
+        "method_text": "Function getSocialFunction() { return socialFunction; }",
+        "method_tokens": "['Function', 'getSocialFunction', '(', ')', '{', 'return', 'socialFunction', ';', '}']",
+        "comment_text": "*\n   *\n   * @return\n   ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "void setSocial(boolean b){ this.social = Boolean.valueOf(b); }",
+        "method_tokens": "['void', 'setSocial', '(', 'boolean', 'b', ')', '{', 'this', '.', 'social', '=', 'Boolean', '.', 'valueOf', '(', 'b', ')', ';', '}']",
+        "comment_text": "*\n   * Set this parameter to be social\n   ",
+        "comment_tokens": "['*', '*', 'Set', 'this', 'parameter', 'to', 'be', 'social']"
+    },
+    {
+        "method_text": "boolean isSocial() { return social.booleanValue();}",
+        "method_tokens": "['boolean', 'isSocial', '(', ')', '{', 'return', 'social', '.', 'booleanValue', '(', ')', ';', '}']",
+        "comment_text": "*\n   *\n   * @return\n   ",
+        "comment_tokens": "['*', '*', '*', '@', 'return']"
+    },
+    {
+        "method_text": "float valueFor(int step){\n\t  return valueFor((float)step);\n  }",
+        "method_tokens": "['float', 'valueFor', '(', 'int', 'step', ')', '{', 'return', 'valueFor', '(', '(', 'float', ')', 'step', ')', ';', '}']",
+        "comment_text": "*\n   * Calculates parameter's value for the Demand Curve as : elasticity * [ ln ] ( demandCurveFunction(step) )\n   * @param step The step for which to calculate parameters value\n   * @return Parameter's value that will be summed for calculating total consumer's consumption\n   ",
+        "comment_tokens": "['*', '*', 'Calculates', 'parameter', \"'s\", 'value', 'for', 'the', 'Demand', 'Curve', 'as', ':', 'elasticity', '*', '[', 'ln', ']', '(', 'demandCurveFunction', '(', 'step', ')', ')', '*', '@', 'param', 'step', 'The', 'step', 'for', 'which', 'to', 'calculate', 'parameters', 'value', '*', '@', 'return', 'Parameter', \"'s\", 'value', 'that', 'will', 'be', 'summed', 'for', 'calculating', 'total', 'consumer', \"'s\", 'consumption']"
+    },
+    {
+        "method_text": "float valueFor(float x){\n\n      float temp = demandCurveFunction.valueFor(x);\n\n      if (temp >0){\n\n            if (ln.booleanValue()) {\n              this.value = new Float(elasticity.floatValue()* ((float)Math.log(temp)));\n            }\n            else {\n              this.value = new Float(elasticity.floatValue() * temp);\n            }\n      }\n      else{\n    \t  log.error(\"FATAL ERROR: Parameter was zero\");\n      }\n      return value.floatValue();\n  }",
+        "method_tokens": "['float', 'valueFor', '(', 'float', 'x', ')', '{', 'float', 'temp', '=', 'demandCurveFunction', '.', 'valueFor', '(', 'x', ')', ';', 'if', '(', 'temp', '>', '0', ')', '{', 'if', '(', 'ln', '.', 'booleanValue', '(', ')', ')', '{', 'this', '.', 'value', '=', 'new', 'Float', '(', 'elasticity', '.', 'floatValue', '(', ')', '*', '(', '(', 'float', ')', 'Math', '.', 'log', '(', 'temp', ')', ')', ')', ';', '}', 'else', '{', 'this', '.', 'value', '=', 'new', 'Float', '(', 'elasticity', '.', 'floatValue', '(', ')', '*', 'temp', ')', ';', '}', '}', 'else', '{', 'log', '.', 'error', '(', '\"FATAL ERROR: Parameter was zero\"', ')', ';', '}', 'return', 'value', '.', 'floatValue', '(', ')', ';', '}']",
+        "comment_text": "*\n   * Overrides the previous method if the input is a float number. Mostly used when the parameter is\n   * social and the input value is the sum of weights.\n   * Calculates parameter's value for the Demand Curve as :\n   * elasticity * [ ln ] (demandCurveFunction(weights) )\n   * @param x The step for which to calculate parameters value\n   * @return Parameter's value that will be summed for calculating total consumer's consumption\n   ",
+        "comment_tokens": "['*', '*', 'Overrides', 'the', 'previous', 'method', 'if', 'the', 'input', 'is', 'a', 'float', 'number', '.', 'Mostly', 'used', 'when', 'the', 'parameter', 'is', '*', 'social', 'and', 'the', 'input', 'value', 'is', 'the', 'sum', 'of', 'weights', '.', '*', 'Calculates', 'parameter', \"'s\", 'value', 'for', 'the', 'Demand', 'Curve', 'as', ':', '*', 'elasticity', '*', '[', 'ln', ']', '(', 'demandCurveFunction', '(', 'weights', ')', ')', '*', '@', 'param', 'x', 'The', 'step', 'for', 'which', 'to', 'calculate', 'parameters', 'value', '*', '@', 'return', 'Parameter', \"'s\", 'value', 'that', 'will', 'be', 'summed', 'for', 'calculating', 'total', 'consumer', \"'s\", 'consumption']"
+    },
+    {
+        "method_text": "Consumes prepareQueryMessageForConsumers(){\n\n        // Predicate\n        Consumes cs = new Consumes();\n\n        // Prepare content\n          // Fill concepts\n        StepAttr step = new StepAttr();\n        step.setId(((Integer)this.getDataStore().get(WaterSupplierAgent.STEP_ID_KEY)));\n        // Fill Predidate\n        cs.setStep2(step);\n\n        MetData md = new MetData();\n        md.setTemperature(((Float)this.getDataStore().get(WaterSupplierAgent.TEMPERATURE_KEY)));\n        md.setRainfall(((Float)this.getDataStore().get(WaterSupplierAgent.RAINFALL_KEY)));\n\n        // Fill Predidate\n        cs.setMeteoData(md);\n\n        WaterConsumption wc = new WaterConsumption();\n        // Fill Predidate\n        cs.setPersonalConsumption(wc);  // empty\n\n        // Fill price policy\n\n        //Check if it's time for policy reviewing\n        int currentStep = ((Integer)this.getDataStore().get(WaterSupplierAgent.STEP_ID_KEY)).intValue();\n        int currentmonth = currentStep*this.simulationStep;\n        if (( currentmonth % reviewPeriod) == 1){\n          //Review pricing Policy\n          reviewPricingPolicy(currentmonth);\n        }\n\n        PriceBlock[] blocks = currentPricingPolicy(0);\n        for(int i=0 ; i<this.numberOfBlocks ; i++){\n            cs.addPricingScale(blocks[i]);\n        }\n\n        return cs;\n\n    }",
+        "method_tokens": "['Consumes', 'prepareQueryMessageForConsumers', '(', ')', '{', 'Consumes', 'cs', '=', 'new', 'Consumes', '(', ')', ';', 'StepAttr', 'step', '=', 'new', 'StepAttr', '(', ')', ';', 'step', '.', 'setId', '(', '(', '(', 'Integer', ')', 'this', '.', 'getDataStore', '(', ')', '.', 'get', '(', 'WaterSupplierAgent', '.', 'STEP_ID_KEY', ')', ')', ')', ';', 'cs', '.', 'setStep2', '(', 'step', ')', ';', 'MetData', 'md', '=', 'new', 'MetData', '(', ')', ';', 'md', '.', 'setTemperature', '(', '(', '(', 'Float', ')', 'this', '.', 'getDataStore', '(', ')', '.', 'get', '(', 'WaterSupplierAgent', '.', 'TEMPERATURE_KEY', ')', ')', ')', ';', 'md', '.', 'setRainfall', '(', '(', '(', 'Float', ')', 'this', '.', 'getDataStore', '(', ')', '.', 'get', '(', 'WaterSupplierAgent', '.', 'RAINFALL_KEY', ')', ')', ')', ';', 'cs', '.', 'setMeteoData', '(', 'md', ')', ';', 'WaterConsumption', 'wc', '=', 'new', 'WaterConsumption', '(', ')', ';', 'cs', '.', 'setPersonalConsumption', '(', 'wc', ')', ';', 'int', 'currentStep', '=', '(', '(', 'Integer', ')', 'this', '.', 'getDataStore', '(', ')', '.', 'get', '(', 'WaterSupplierAgent', '.', 'STEP_ID_KEY', ')', ')', '.', 'intValue', '(', ')', ';', 'int', 'currentmonth', '=', 'currentStep', '*', 'this', '.', 'simulationStep', ';', 'if', '(', '(', 'currentmonth', '%', 'reviewPeriod', ')', '==', '1', ')', '{', 'reviewPricingPolicy', '(', 'currentmonth', ')', ';', '}', 'PriceBlock', '[', ']', 'blocks', '=', 'currentPricingPolicy', '(', '0', ')', ';', 'for', '(', 'int', 'i', '=', '0', ';', 'i', '<', 'this', '.', 'numberOfBlocks', ';', 'i', '++', ')', '{', 'cs', '.', 'addPricingScale', '(', 'blocks', '[', 'i', ']', ')', ';', '}', 'return', 'cs', ';', '}']",
+        "comment_text": "*\n     * Prepares query message for consumers. Fills stepID, temperature, rainfall and water price\n     * @return A predicate Consumes filled with all appropriate values\n     ",
+        "comment_tokens": "['*', '*', 'Prepares', 'query', 'message', 'for', 'consumers', '.', 'Fills', 'stepID', ',', 'temperature', ',', 'rainfall', 'and', 'water', 'price', '*', '@', 'return', 'A', 'predicate', 'Consumes', 'filled', 'with', 'all', 'appropriate', 'values']"
+    },
+    {
+        "method_text": "void scenario0(float currentCPI){\n        for(int i=0 ; i < this.numberOfBlocks ; i++){\n            this.actualPrices[i] = (this.blocksPrices[i] * 100) / currentCPI;\n            this.currentPrices[i] = this.blocksPrices[i];\n        }\n\n    }",
+        "method_tokens": "['void', 'scenario0', '(', 'float', 'currentCPI', ')', '{', 'for', '(', 'int', 'i', '=', '0', ';', 'i', '<', 'this', '.', 'numberOfBlocks', ';', 'i', '++', ')', '{', 'this', '.', 'actualPrices', '[', 'i', ']', '=', '(', 'this', '.', 'blocksPrices', '[', 'i', ']', '*', '100', ')', '/', 'currentCPI', ';', 'this', '.', 'currentPrices', '[', 'i', ']', '=', 'this', '.', 'blocksPrices', '[', 'i', ']', ';', '}', '}']",
+        "comment_text": " To timologio tou nerou paramenei sta8ero (meiwnetai h pragmatikh timh tou)",
+        "comment_tokens": "['To', 'timologio', 'tou', 'nerou', 'paramenei', 'sta8ero', '(', 'meiwnetai', 'h', 'pragmatikh', 'timh', 'tou', ')']"
+    },
+    {
+        "method_text": "void scenario1(float currentCPI){\n        for(int i=0 ; i < this.numberOfBlocks ; i++){\n            this.actualPrices[i] = (this.blocksPrices[i] * 100) / this.CPI;\n            this.currentPrices[i] = (this.actualPrices[i] * currentCPI) / 100;\n        }\n\n    }",
+        "method_tokens": "['void', 'scenario1', '(', 'float', 'currentCPI', ')', '{', 'for', '(', 'int', 'i', '=', '0', ';', 'i', '<', 'this', '.', 'numberOfBlocks', ';', 'i', '++', ')', '{', 'this', '.', 'actualPrices', '[', 'i', ']', '=', '(', 'this', '.', 'blocksPrices', '[', 'i', ']', '*', '100', ')', '/', 'this', '.', 'CPI', ';', 'this', '.', 'currentPrices', '[', 'i', ']', '=', '(', 'this', '.', 'actualPrices', '[', 'i', ']', '*', 'currentCPI', ')', '/', '100', ';', '}', '}']",
+        "comment_text": " To timologio anaprosarmozetai wste h pragmatikh timh tou neroy na paramenei sta8erh",
+        "comment_tokens": "['To', 'timologio', 'anaprosarmozetai', 'wste', 'h', 'pragmatikh', 'timh', 'tou', 'neroy', 'na', 'paramenei', 'sta8erh']"
+    },
+    {
+        "method_text": "void sendStepResultsToSA(float stepTotal){\n\n           // Prepare INFORM message to Simulator Agent\n            ACLMessage msg = new ACLMessage(ACLMessage.INFORM);\n            msg.addReceiver(SIMULATOR);\n            msg.setLanguage(myAgent.codec.getName());\n            msg.setOntology(myAgent.ontology.getName());\n\n            // Predicate\n            StepTotalConsumption tc = new StepTotalConsumption();\n\n            // Prepare content\n                // Fill concepts\n            StepAttr step = new StepAttr();\n            step.setId(((Integer)this.getDataStore().get(WaterSupplierAgent.STEP_ID_KEY)));\n            // Fill Predidate\n            tc.setStep4(step);\n\n            WaterConsumption wc = new WaterConsumption();\n//            stepTotal = (stepTotal);\n            wc.setQuantity(new Float(stepTotal));\n            // Fill Predidate\n            tc.setStepConsumption(wc);\n\n            // Fill Predidate with price policy\n            PriceBlock[] blocks = currentPricingPolicy(1);\n            for(int i=0 ; i<blocks.length ; i++){\n                tc.addWaterPrice(blocks[i]);\n            }\n\n            // Fill message content\n            try{\n               myAgent.getContentManager().fillContent(msg,tc);\n               myAgent.send(msg);\n            }\n            catch (CodecException ce){\n               ce.printStackTrace();\n            }\n            catch (OntologyException oe){\n               oe.printStackTrace();\n            }\n\n\n    }",
+        "method_tokens": "['void', 'sendStepResultsToSA', '(', 'float', 'stepTotal', ')', '{', 'ACLMessage', 'msg', '=', 'new', 'ACLMessage', '(', 'ACLMessage', '.', 'INFORM', ')', ';', 'msg', '.', 'addReceiver', '(', 'SIMULATOR', ')', ';', 'msg', '.', 'setLanguage', '(', 'myAgent', '.', 'codec', '.', 'getName', '(', ')', ')', ';', 'msg', '.', 'setOntology', '(', 'myAgent', '.', 'ontology', '.', 'getName', '(', ')', ')', ';', 'StepTotalConsumption', 'tc', '=', 'new', 'StepTotalConsumption', '(', ')', ';', 'StepAttr', 'step', '=', 'new', 'StepAttr', '(', ')', ';', 'step', '.', 'setId', '(', '(', '(', 'Integer', ')', 'this', '.', 'getDataStore', '(', ')', '.', 'get', '(', 'WaterSupplierAgent', '.', 'STEP_ID_KEY', ')', ')', ')', ';', 'tc', '.', 'setStep4', '(', 'step', ')', ';', 'WaterConsumption', 'wc', '=', 'new', 'WaterConsumption', '(', ')', ';', 'wc', '.', 'setQuantity', '(', 'new', 'Float', '(', 'stepTotal', ')', ')', ';', 'tc', '.', 'setStepConsumption', '(', 'wc', ')', ';', 'PriceBlock', '[', ']', 'blocks', '=', 'currentPricingPolicy', '(', '1', ')', ';', 'for', '(', 'int', 'i', '=', '0', ';', 'i', '<', 'blocks', '.', 'length', ';', 'i', '++', ')', '{', 'tc', '.', 'addWaterPrice', '(', 'blocks', '[', 'i', ']', ')', ';', '}', 'try', '{', 'myAgent', '.', 'getContentManager', '(', ')', '.', 'fillContent', '(', 'msg', ',', 'tc', ')', ';', 'myAgent', '.', 'send', '(', 'msg', ')', ';', '}', 'catch', '(', 'CodecException', 'ce', ')', '{', 'ce', '.', 'printStackTrace', '(', ')', ';', '}', 'catch', '(', 'OntologyException', 'oe', ')', '{', 'oe', '.', 'printStackTrace', '(', ')', ';', '}', '}']",
+        "comment_text": "*\n     * Sends the step result to SA\n     * @param stepTotal The step's total consumption\n     ",
+        "comment_tokens": "['*', '*', 'Sends', 'the', 'step', 'result', 'to', 'SA', '*', '@', 'param', 'stepTotal', 'The', 'step', \"'s\", 'total', 'consumption']"
+    },
+    {
+        "method_text": "void unpackArguments(){\n\n     // get the list with the consumers\n     Object[] allArguments = getArguments();\n\n     queryMOA = ((Boolean)allArguments[0]).booleanValue();\n     Vector v = (Vector) allArguments[1];\n     allConsumers = new ConsumerAttributes[v.size()];\n     v.copyInto(allConsumers);\n\n     priceData = (Vector) allArguments[2];\n     simulationStep = (Integer)allArguments[3];\n\n  }",
+        "method_tokens": "['void', 'unpackArguments', '(', ')', '{', 'Object', '[', ']', 'allArguments', '=', 'getArguments', '(', ')', ';', 'queryMOA', '=', '(', '(', 'Boolean', ')', 'allArguments', '[', '0', ']', ')', '.', 'booleanValue', '(', ')', ';', 'Vector', 'v', '=', '(', 'Vector', ')', 'allArguments', '[', '1', ']', ';', 'allConsumers', '=', 'new', 'ConsumerAttributes', '[', 'v', '.', 'size', '(', ')', ']', ';', 'v', '.', 'copyInto', '(', 'allConsumers', ')', ';', 'priceData', '=', '(', 'Vector', ')', 'allArguments', '[', '2', ']', ';', 'simulationStep', '=', '(', 'Integer', ')', 'allArguments', '[', '3', ']', ';', '}']",
+        "comment_text": "*\n   * \"Unpack\" the arguments WSA receives when is born. The arguments are elements of an object array.\n   * The first argument is a boolean value indicating whether WSA has to query MOA about met data.\n   * It is true in case one of demand curve parameters has a function of type MetDataFunction.\n   * The second argument is a Vector of all consumers (as ConsumerAttributes objects).\n   * The third is all price data that will be passed to BehaviourQueryConsumers.\n   ",
+        "comment_tokens": "['*', '*', '``', 'Unpack', \"''\", 'the', 'arguments', 'WSA', 'receives', 'when', 'is', 'born', '.', 'The', 'arguments', 'are', 'elements', 'of', 'an', 'object', 'array', '.', '*', 'The', 'first', 'argument', 'is', 'a', 'boolean', 'value', 'indicating', 'whether', 'WSA', 'has', 'to', 'query', 'MOA', 'about', 'met', 'data', '.', '*', 'It', 'is', 'true', 'in', 'case', 'one', 'of', 'demand', 'curve', 'parameters', 'has', 'a', 'function', 'of', 'type', 'MetDataFunction', '.', '*', 'The', 'second', 'argument', 'is', 'a', 'Vector', 'of', 'all', 'consumers', '(', 'as', 'ConsumerAttributes', 'objects', ')', '.', '*', 'The', 'third', 'is', 'all', 'price', 'data', 'that', 'will', 'be', 'passed', 'to', 'BehaviourQueryConsumers', '.']"
+    },
+    {
+        "method_text": "ACLMessage createQueryMsg(){\n\n        ACLMessage msg = new ACLMessage(ACLMessage.QUERY_REF);\n        msg.setProtocol(jade.domain.FIPANames.InteractionProtocol.FIPA_QUERY);\n        msg.setLanguage(codec.getName());\n        msg.setOntology(ontology.getName());\n        return msg;\n  }",
+        "method_tokens": "['ACLMessage', 'createQueryMsg', '(', ')', '{', 'ACLMessage', 'msg', '=', 'new', 'ACLMessage', '(', 'ACLMessage', '.', 'QUERY_REF', ')', ';', 'msg', '.', 'setProtocol', '(', 'jade', '.', 'domain', '.', 'FIPANames', '.', 'InteractionProtocol', '.', 'FIPA_QUERY', ')', ';', 'msg', '.', 'setLanguage', '(', 'codec', '.', 'getName', '(', ')', ')', ';', 'msg', '.', 'setOntology', '(', 'ontology', '.', 'getName', '(', ')', ')', ';', 'return', 'msg', ';', '}']",
+        "comment_text": "*\n   * Creates an ACLMessage with QUERY_REF performative, FIPA_QUERY in protocol slot,\n   * WSA's language and ontology selected.\n   * @return The ACLMessage\n   ",
+        "comment_tokens": "['*', '*', 'Creates', 'an', 'ACLMessage', 'with', 'QUERY_REF', 'performative', ',', 'FIPA_QUERY', 'in', 'protocol', 'slot', ',', '*', 'WSA', \"'s\", 'language', 'and', 'ontology', 'selected', '.', '*', '@', 'return', 'The', 'ACLMessage']"
+    },
+    {
+        "method_text": "void onFailure(ACLMessage msg){\n\n        ACLMessage failureMsg = new ACLMessage(ACLMessage.FAILURE);\n        failureMsg.addReceiver(SIMULATOR);\n        failureMsg.setContent(msg.getSender() + \" - \" +  msg.getContent());\n        send(failureMsg);\n    }",
+        "method_tokens": "['void', 'onFailure', '(', 'ACLMessage', 'msg', ')', '{', 'ACLMessage', 'failureMsg', '=', 'new', 'ACLMessage', '(', 'ACLMessage', '.', 'FAILURE', ')', ';', 'failureMsg', '.', 'addReceiver', '(', 'SIMULATOR', ')', ';', 'failureMsg', '.', 'setContent', '(', 'msg', '.', 'getSender', '(', ')', '+', '\" - \"', '+', 'msg', '.', 'getContent', '(', ')', ')', ';', 'send', '(', 'failureMsg', ')', ';', '}']",
+        "comment_text": "*\n   * It's called when something goes wrong. WSA sents a message to SA in order to be displayed on progress\n   * GUI\n   * @param msg The message to be send to SA\n   ",
+        "comment_tokens": "['*', '*', 'It', \"'s\", 'called', 'when', 'something', 'goes', 'wrong', '.', 'WSA', 'sents', 'a', 'message', 'to', 'SA', 'in', 'order', 'to', 'be', 'displayed', 'on', 'progress', '*', 'GUI', '*', '@', 'param', 'msg', 'The', 'message', 'to', 'be', 'send', 'to', 'SA']"
+    },
+    {
+        "method_text": "String toString() {\n        return image + \": is decoded\";\n    }",
+        "method_tokens": "['String', 'toString', '(', ')', '{', 'return', 'image', '+', '\": is decoded\"', ';', '}']",
+        "comment_text": " this is comment\n this\n    is comment 2\n    \n this is comment 3",
+        "comment_tokens": "['this', 'is', 'comment', 'this', 'is', 'comment', '2', 'this', 'is', 'comment', '3']"
+    },
+    {
+        "method_text": "String m() {\n        return image + \": is decoded\";\n    }",
+        "method_tokens": "['String', 'm', '(', ')', '{', 'return', 'image', '+', '\": is decoded\"', ';', '}']",
+        "comment_text": " this is comment",
+        "comment_tokens": "['this', 'is', 'comment']"
+    }
+]

@@ -7,6 +7,8 @@ import os
 import json
 from nltk.tokenize import sent_tokenize, word_tokenize
 
+from config import BASE_DATA_DIR, ORIGINAL_DATA_PATHS, DATASET_PATH
+
 
 class MethodDetectorListener(JavaParserLabeledListener):
     def __init__(self):
@@ -143,39 +145,40 @@ class DataGenerator:
                     all_files.append(os.path.join(root, file).replace("\\", "/"))
         return all_files
 
-    def generate(self, java_project_address):
+    def generate(self, java_project_addresses, dataset_path):
         data = []
-        files = self.find_all_file(java_project_address, 'java')
-        for f in files:
-            print('\t' + f)
-            try:
-                stream = FileStream(f, encoding='utf8')
-            except:
-                print('\t' + f, 'can not read')
-                continue
-            lexer = JavaLexer(stream)
-            tokens = CommonTokenStream(lexer)
-            parser = JavaParserLabeled(tokens)
-            tree = parser.compilationUnit()
-            listener = MethodDetectorListener()
-            walker = ParseTreeWalker()
+        for path in java_project_addresses:
+            java_project_address = BASE_DATA_DIR + path
+            files = self.find_all_file(java_project_address, 'java')
+            for f in files:
+                print('\t' + f)
+                try:
+                    stream = FileStream(f, encoding='utf8')
+                except:
+                    print('\t' + f, 'can not read')
+                    continue
+                lexer = JavaLexer(stream)
+                tokens = CommonTokenStream(lexer)
+                parser = JavaParserLabeled(tokens)
+                tree = parser.compilationUnit()
+                listener = MethodDetectorListener()
+                walker = ParseTreeWalker()
 
-            walker.walk(
-                listener=listener,
-                t=tree
-            )
+                walker.walk(
+                    listener=listener,
+                    t=tree
+                )
 
-            methods = listener.methods_info
-            comments = self.get_cumulative_comments(f)
+                methods = listener.methods_info
+                comments = self.get_cumulative_comments(f)
 
-            data += self.merge(comments, methods)
+                data += self.merge(comments, methods)
             # for method_info in listener.methods_info:
             #     comment_text = self.get_comment(f, method_info['start_line'])
 
-        with open(java_project_address + 'data.json', mode="w", encoding='utf-8', errors='ignore') as write_file:
+        with open(dataset_path, mode="w", encoding='utf-8', errors='ignore') as write_file:
             json.dump(data, write_file, indent=4)
 
 if __name__ == "__main__":
-    java_address = "benchmarks/javaproject/"
     DG = DataGenerator()
-    DG.generate(java_address)
+    DG.generate(ORIGINAL_DATA_PATHS, DATASET_PATH)
