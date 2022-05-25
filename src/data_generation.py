@@ -127,9 +127,9 @@ class DataGenerator:
             elif comments[c]['stop_line'] + 1 == methods[m]['start_line']:
                 row = {
                     'method_text': methods[m]['text'],
-                    'method_tokens': str(methods[m]['tokens']),
+                    'method_tokens': methods[m]['tokens'],
                     'comment_text': comments[c]['text'],
-                    'comment_tokens': str(self.tokenize_comment(comments[c]['text']))
+                    'comment_tokens': self.tokenize_comment(comments[c]['text'])
                 }
                 data.append(row)
                 #print('row:', row)
