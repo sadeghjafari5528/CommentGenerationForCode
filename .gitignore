@@ -1,3 +1,7 @@
+# benchmark projects
+benchmarks/10_water-simulator/
+benchmarks/javaproject/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -20,6 +24,7 @@ parts/
 sdist/
 var/
 wheels/
+.idea/
 pip-wheel-metadata/
 share/python-wheels/
 *.egg-info/
