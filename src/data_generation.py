@@ -51,7 +51,7 @@ class DataGenerator:
         return count
 
     def get_cumulative_comments(self, file_address):
-        file_stream = FileStream(r"" + file_address)
+        file_stream = FileStream(r"" + file_address, encoding='utf8', errors='ignore')
         lexer = JavaLexer(file_stream)
         token = lexer.nextToken()
 
@@ -153,7 +153,7 @@ class DataGenerator:
             for f in files:
                 print('\t' + f)
                 try:
-                    stream = FileStream(f, encoding='utf8')
+                    stream = FileStream(f, encoding='utf8', errors='ignore')
                 except:
                     print('\t' + f, 'can not read')
                     continue

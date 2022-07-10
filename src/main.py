@@ -6,8 +6,8 @@ import json
 
 
 if __name__ == "__main__":
-    DG = DataGenerator()
-    DG.generate(ORIGINAL_DATA_PATHS, DATASET_PATH)
+    #DG = DataGenerator()
+    #DG.generate(ORIGINAL_DATA_PATHS, DATASET_PATH)
 
     with open(DATASET_PATH) as f:
         data = json.load(f)
