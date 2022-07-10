@@ -1,5 +1,5 @@
 # benchmark projects
-data/benchmark/*
+data/benchmarks/*
 
 
 # Byte-compiled / optimized / DLL files
